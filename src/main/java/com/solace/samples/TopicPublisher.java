@@ -17,7 +17,7 @@
  * under the License.
  */
 
-/**
+/*
  * Solace JMS 1.1 Examples: TopicPublisher
  */
 
@@ -101,7 +101,7 @@ public class TopicPublisher {
 
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         messageProducer.close();
         session.close();
