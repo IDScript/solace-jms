@@ -41,7 +41,7 @@ public class QueueConsumer {
 
     public static void main(String... args) throws Exception {
         if (args.length != 4 || args[1].split("@").length != 2) {
-            System.out.println("Usage: QueueConsumer <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println("Usage: QueueConsumer <host:port> <client-username@message-vpn> <client-password> <queueName>");
             System.out.println();
             System.exit(-1);
         }

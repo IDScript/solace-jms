@@ -38,7 +38,7 @@ public class TopicPublisher {
     public static void main(String... args) throws Exception {
         // Check command line arguments
         if (args.length != 4 || args[1].split("@").length != 2) {
-            System.out.println("Usage: TopicPublisher <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println("Usage: TopicPublisher <host:port> <client-username@message-vpn> <client-password> <topicName>");
             System.out.println();
             System.exit(-1);
         }
