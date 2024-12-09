@@ -17,8 +17,8 @@
  * under the License.
  */
 
-/**
- *  Solace JMS 1.1 Examples: QueueProducer
+/*
+ * Solace JMS 1.1 Examples: QueueProducer
  */
 
 package com.solace.samples;
@@ -30,12 +30,10 @@ import javax.jms.*;
 
 /**
  * Sends a persistent message to a queue using Solace JMS API implementation.
- *
+ * <p>
  * The queue used for messages is created on the message broker.
  */
 public class QueueProducer {
-
-    final String QUEUE_NAME = "Q/tutorial";
 
     public static void main(String... args) throws Exception {
         if (args.length != 3 || args[1].split("@").length != 2) {
@@ -64,6 +62,8 @@ public class QueueProducer {
         String vpnName = split[1];
         String username = split[0];
         String password = args[2];
+        String queueName = args[3];
+
 
         System.out.printf("QueueProducer is connecting to Solace messaging at %s...%n", host);
 
@@ -89,7 +89,7 @@ public class QueueProducer {
 
         // Create the queue programmatically and the corresponding router resource
         // will also be created dynamically because DynamicDurables is enabled.
-        Queue queue = session.createQueue(QUEUE_NAME);
+        Queue queue = session.createQueue(queueName);
 
         // Create the message producer for the created queue
         MessageProducer messageProducer = session.createProducer(queue);
@@ -108,7 +108,7 @@ public class QueueProducer {
 
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         messageProducer.close();
         session.close();
