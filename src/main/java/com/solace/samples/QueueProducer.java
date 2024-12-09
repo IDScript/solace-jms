@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,25 +23,38 @@
 
 package com.solace.samples;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
 
+import javax.jms.*;
+
 /**
  * Sends a persistent message to a queue using Solace JMS API implementation.
- * 
+ *
  * The queue used for messages is created on the message broker.
  */
 public class QueueProducer {
 
     final String QUEUE_NAME = "Q/tutorial";
+
+    public static void main(String... args) throws Exception {
+        if (args.length != 3 || args[1].split("@").length != 2) {
+            System.out.println("Usage: QueueProducer <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[0].isEmpty()) {
+            System.out.println("No client-username entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[1].isEmpty()) {
+            System.out.println("No message-vpn entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        new QueueProducer().run(args);
+    }
 
     public void run(String... args) throws Exception {
 
@@ -100,24 +113,5 @@ public class QueueProducer {
         messageProducer.close();
         session.close();
         connection.close();
-    }
-
-    public static void main(String... args) throws Exception {
-        if (args.length != 3 || args[1].split("@").length != 2) {
-            System.out.println("Usage: QueueProducer <host:port> <client-username@message-vpn> <client-password>");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[0].isEmpty()) {
-            System.out.println("No client-username entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[1].isEmpty()) {
-            System.out.println("No message-vpn entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        new QueueProducer().run(args);
     }
 }

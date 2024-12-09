@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,20 +23,12 @@
 
 package com.solace.samples;
 
-import java.util.concurrent.CountDownLatch;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
 import com.solacesystems.jms.SupportedProperty;
+
+import javax.jms.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Receives a persistent message from a queue using Solace JMS API implementation.
@@ -49,6 +41,25 @@ public class QueueConsumer {
 
     // Latch used for synchronizing between threads
     final CountDownLatch latch = new CountDownLatch(1);
+
+    public static void main(String... args) throws Exception {
+        if (args.length != 3 || args[1].split("@").length != 2) {
+            System.out.println("Usage: QueueConsumer <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[0].isEmpty()) {
+            System.out.println("No client-username entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[1].isEmpty()) {
+            System.out.println("No message-vpn entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        new QueueConsumer().run(args);
+    }
 
     public void run(String... args) throws Exception {
 
@@ -125,24 +136,5 @@ public class QueueConsumer {
         messageConsumer.close();
         session.close();
         connection.close();
-    }
-
-    public static void main(String... args) throws Exception {
-        if (args.length != 3 || args[1].split("@").length != 2) {
-            System.out.println("Usage: QueueConsumer <host:port> <client-username@message-vpn> <client-password>");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[0].isEmpty()) {
-            System.out.println("No client-username entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[1].isEmpty()) {
-            System.out.println("No message-vpn entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        new QueueConsumer().run(args);
     }
 }

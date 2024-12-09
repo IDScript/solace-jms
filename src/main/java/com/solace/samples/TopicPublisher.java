@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,25 +23,39 @@
 
 package com.solace.samples;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
 
+import javax.jms.*;
+
 /**
  * Publishes a messages to a topic using Solace JMS 1.1 API implementation.
- * 
+ *
  * This is the Publisher in the Publish/Subscribe messaging pattern.
  */
 public class TopicPublisher {
 
     final String TOPIC_NAME = "T/GettingStarted/pubsub";
+
+    public static void main(String... args) throws Exception {
+        // Check command line arguments
+        if (args.length != 3 || args[1].split("@").length != 2) {
+            System.out.println("Usage: TopicPublisher <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[0].isEmpty()) {
+            System.out.println("No client-username entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[1].isEmpty()) {
+            System.out.println("No message-vpn entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        new TopicPublisher().run(args);
+    }
 
     public void run(String... args) throws Exception {
         String[] split = args[1].split("@");
@@ -93,25 +107,5 @@ public class TopicPublisher {
         messageProducer.close();
         session.close();
         connection.close();
-    }
-
-    public static void main(String... args) throws Exception {
-        // Check command line arguments
-        if (args.length != 3 || args[1].split("@").length != 2) {
-            System.out.println("Usage: TopicPublisher <host:port> <client-username@message-vpn> <client-password>");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[0].isEmpty()) {
-            System.out.println("No client-username entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[1].isEmpty()) {
-            System.out.println("No message-vpn entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        new TopicPublisher().run(args);
     }
 }

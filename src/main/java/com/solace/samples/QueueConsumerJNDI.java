@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,23 +23,14 @@
 
 package com.solace.samples;
 
-import java.util.Hashtable;
-import java.util.concurrent.CountDownLatch;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-
 import com.solacesystems.jms.SolJmsUtility;
 import com.solacesystems.jms.SupportedProperty;
+
+import javax.jms.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import java.util.Hashtable;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Receives a persistent message from a queue using Solace JMS API implementation. Connection to the Solace message
@@ -56,6 +47,25 @@ public class QueueConsumerJNDI {
     // Latch used for synchronizing between threads
     final CountDownLatch latch = new CountDownLatch(1);
 
+    public static void main(String... args) throws Exception {
+        if (args.length != 3 || args[1].split("@").length != 2) {
+            System.out.println("Usage: QueueConsumerJNDI <host:port> <client-username@message-vpn> <client-password>");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[0].isEmpty()) {
+            System.out.println("No client-username entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        if (args[1].split("@")[1].isEmpty()) {
+            System.out.println("No message-vpn entered");
+            System.out.println();
+            System.exit(-1);
+        }
+        new QueueConsumerJNDI().run(args);
+    }
+
     public void run(String... args) throws Exception {
 
         String[] split = args[1].split("@");
@@ -71,7 +81,7 @@ public class QueueConsumerJNDI {
         Hashtable<String, Object> env = new Hashtable<String, Object>();
         // use the Solace JNDI initial context factory
         env.put(InitialContext.INITIAL_CONTEXT_FACTORY, "com.solacesystems.jndi.SolJNDIInitialContextFactory");
-  
+
         // assign Solace message router connection parameters
         env.put(InitialContext.PROVIDER_URL, host);
         env.put(Context.SECURITY_PRINCIPAL, username + '@' + vpnName); // Formatted as user@message-vpn
@@ -136,24 +146,5 @@ public class QueueConsumerJNDI {
         connection.close();
         // The initial context needs to be close; it does not extend AutoCloseable
         initialContext.close();
-    }
-
-    public static void main(String... args) throws Exception {
-        if (args.length != 3 || args[1].split("@").length != 2) {
-            System.out.println("Usage: QueueConsumerJNDI <host:port> <client-username@message-vpn> <client-password>");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[0].isEmpty()) {
-            System.out.println("No client-username entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        if (args[1].split("@")[1].isEmpty()) {
-            System.out.println("No message-vpn entered");
-            System.out.println();
-            System.exit(-1);
-        }
-        new QueueConsumerJNDI().run(args);
     }
 }
