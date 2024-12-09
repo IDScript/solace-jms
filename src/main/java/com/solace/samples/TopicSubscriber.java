@@ -17,8 +17,8 @@
  * under the License.
  */
 
-/**
- * Solace JMS 1.1 Examples: TopicSubscriber
+/*
+  Solace JMS 1.1 Examples: TopicSubscriber
  */
 
 package com.solace.samples;
@@ -31,19 +31,17 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Subscribes to messages published to a topic using Solace JMS 1.1 API implementation.
- *
+ * <p>
  * This is the Subscriber in the Publish/Subscribe messaging pattern.
  */
 public class TopicSubscriber {
-
-    final String TOPIC_NAME = "T/GettingStarted/pubsub";
 
     // Latch used for synchronizing between threads
     final CountDownLatch latch = new CountDownLatch(1);
 
     public static void main(String... args) throws Exception {
-        if (args.length != 3 || args[1].split("@").length != 2) {
-            System.out.println("Usage: TopicSubscriber <host:port> <client-username@message-vpn> <client-password>");
+        if (args.length != 4 || args[1].split("@").length != 2) {
+            System.out.println("Usage: TopicSubscriber <host:port> <client-username@message-vpn> <client-password> <topic>");
             System.out.println();
             System.exit(-1);
         }
@@ -67,8 +65,9 @@ public class TopicSubscriber {
         String vpnName = split[1];
         String username = split[0];
         String password = args[2];
+        String topicName = args[3];
 
-        System.out.printf("TopicSubscriber is connecting to Solace messaging at %s...%n", host);
+        System.out.printf("TopicSubscriber is connecting to Solace messaging at %s [%s]...%n", host, topicName);
 
         // Programmatically create the connection factory using default settings
         SolConnectionFactory connectionFactory = SolJmsUtility.createConnectionFactory();
@@ -85,27 +84,24 @@ public class TopicSubscriber {
                 username);
 
         // Create the subscription topic programmatically
-        Topic topic = session.createTopic(TOPIC_NAME);
+        Topic topic = session.createTopic(topicName);
 
         // Create the message consumer for the subscription topic
         MessageConsumer messageConsumer = session.createConsumer(topic);
 
         // Use the anonymous inner class for receiving messages asynchronously
-        messageConsumer.setMessageListener(new MessageListener() {
-            @Override
-            public void onMessage(Message message) {
-                try {
-                    if (message instanceof TextMessage) {
-                        System.out.printf("TextMessage received: '%s'%n", ((TextMessage) message).getText());
-                    } else {
-                        System.out.println("Message received.");
-                    }
-                    System.out.printf("Message Content:%n%s%n", SolJmsUtility.dumpMessage(message));
-                    latch.countDown(); // unblock the main thread
-                } catch (JMSException ex) {
-                    System.out.println("Error processing incoming message.");
-                    ex.printStackTrace();
+        messageConsumer.setMessageListener(message -> {
+            try {
+                if (message instanceof TextMessage) {
+                    System.out.printf("TextMessage received: '%s'%n", ((TextMessage) message).getText());
+                } else {
+                    System.out.println("Message received.");
                 }
+                System.out.printf("Message Content:%n%s%n", SolJmsUtility.dumpMessage(message));
+                latch.countDown(); // unblock the main thread
+            } catch (JMSException ex) {
+                System.out.println("Error processing incoming message.");
+                ex.printStackTrace();
             }
         });
 
@@ -118,7 +114,7 @@ public class TopicSubscriber {
         connection.stop();
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         messageConsumer.close();
         session.close();
