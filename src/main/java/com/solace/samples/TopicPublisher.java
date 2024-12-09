@@ -18,7 +18,7 @@
  */
 
 /**
- *  Solace JMS 1.1 Examples: TopicPublisher
+ * Solace JMS 1.1 Examples: TopicPublisher
  */
 
 package com.solace.samples;
@@ -30,16 +30,14 @@ import javax.jms.*;
 
 /**
  * Publishes a messages to a topic using Solace JMS 1.1 API implementation.
- *
+ * <p>
  * This is the Publisher in the Publish/Subscribe messaging pattern.
  */
 public class TopicPublisher {
 
-    final String TOPIC_NAME = "T/GettingStarted/pubsub";
-
     public static void main(String... args) throws Exception {
         // Check command line arguments
-        if (args.length != 3 || args[1].split("@").length != 2) {
+        if (args.length != 4 || args[1].split("@").length != 2) {
             System.out.println("Usage: TopicPublisher <host:port> <client-username@message-vpn> <client-password>");
             System.out.println();
             System.exit(-1);
@@ -64,6 +62,7 @@ public class TopicPublisher {
         String vpnName = split[1];
         String username = split[0];
         String password = args[2];
+        String topicName = args[3];
 
         System.out.printf("TopicPublisher is connecting to Solace messaging at %s...%n", host);
 
@@ -84,7 +83,7 @@ public class TopicPublisher {
                 username);
 
         // Create the publishing topic programmatically
-        Topic topic = session.createTopic(TOPIC_NAME);
+        Topic topic = session.createTopic(topicName);
 
         // Create the message producer for the created topic
         MessageProducer messageProducer = session.createProducer(topic);
