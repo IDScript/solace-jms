@@ -17,8 +17,8 @@
  * under the License.
  */
 
-/**
- *  Solace JMS 1.1 Examples: BasicRequestor
+/*
+ * Solace JMS 1.1 Examples: BasicRequestor
  */
 
 package com.solace.samples;
@@ -32,7 +32,7 @@ import java.util.UUID;
 
 /**
  * Sends a request message using Solace JMS API implementation and receives a reply to it.
- *
+ * <p>
  * This is the Requestor in the Request/Reply messaging pattern.
  */
 public class BasicRequestor {
@@ -151,7 +151,7 @@ public class BasicRequestor {
         connection.stop();
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         replyConsumer.close();
         requestProducer.close();

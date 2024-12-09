@@ -17,7 +17,7 @@
  * under the License.
  */
 
-/**
+/*
  *  Solace JMS 1.1 Examples: QueueProducerJNDI
  */
 
@@ -30,7 +30,7 @@ import java.util.Hashtable;
 
 /**
  * Sends a persistent message to a queue using Solace JMS API implementation.
- *
+ * <p>
  * The queue used for messages must exist on the message broker.
  */
 public class QueueProducerJNDI {
@@ -70,7 +70,7 @@ public class QueueProducerJNDI {
         System.out.printf("QueueProducerJNDI is connecting to Solace messaging at %s...%n", host);
 
         // setup environment variables for creating of the initial context
-        Hashtable<String, Object> env = new Hashtable<String, Object>();
+        Hashtable<String, Object> env = new Hashtable<>();
         // use the Solace JNDI initial context factory
         env.put(InitialContext.INITIAL_CONTEXT_FACTORY, "com.solacesystems.jndi.SolJNDIInitialContextFactory");
 
@@ -79,7 +79,7 @@ public class QueueProducerJNDI {
         env.put(Context.SECURITY_PRINCIPAL, username + '@' + vpnName); // Formatted as user@message-vpn
         env.put(Context.SECURITY_CREDENTIALS, password);
 
-        // Create the initial context that will be used to lookup the JMS Administered Objects.
+        // Create the initial context that will be used to look up the JMS Administered Objects.
         InitialContext initialContext = new InitialContext(env);
         // Lookup the connection factory
         ConnectionFactory connectionFactory = (ConnectionFactory) initialContext.lookup(CONNECTION_FACTORY_JNDI_NAME);
@@ -113,7 +113,7 @@ public class QueueProducerJNDI {
 
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         messageProducer.close();
         session.close();

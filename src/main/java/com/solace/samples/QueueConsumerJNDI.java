@@ -17,7 +17,7 @@
  * under the License.
  */
 
-/**
+/*
  *  Solace JMS 1.1 Examples: QueueConsumerJNDI
  */
 
@@ -34,8 +34,8 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Receives a persistent message from a queue using Solace JMS API implementation. Connection to the Solace message
- * router is setup using JNDI.
- *
+ * router is set up using JNDI.
+ * <p>
  * The queue used for messages must exist on the message broker.
  */
 public class QueueConsumerJNDI {
@@ -78,7 +78,7 @@ public class QueueConsumerJNDI {
         System.out.printf("QueueConsumerJNDI is connecting to Solace messaging at %s...%n", host);
 
         // setup environment variables for creating of the initial context
-        Hashtable<String, Object> env = new Hashtable<String, Object>();
+        Hashtable<String, Object> env = new Hashtable<>();
         // use the Solace JNDI initial context factory
         env.put(InitialContext.INITIAL_CONTEXT_FACTORY, "com.solacesystems.jndi.SolJNDIInitialContextFactory");
 
@@ -87,7 +87,7 @@ public class QueueConsumerJNDI {
         env.put(Context.SECURITY_PRINCIPAL, username + '@' + vpnName); // Formatted as user@message-vpn
         env.put(Context.SECURITY_CREDENTIALS, password);
 
-        // Create the initial context that will be used to lookup the JMS Administered Objects.
+        // Create the initial context that will be used to look up the JMS Administered Objects.
         InitialContext initialContext = new InitialContext(env);
         // Lookup the connection factory
         ConnectionFactory connectionFactory = (ConnectionFactory) initialContext.lookup(CONNECTION_FACTORY_JNDI_NAME);
@@ -108,25 +108,22 @@ public class QueueConsumerJNDI {
         MessageConsumer messageConsumer = session.createConsumer(queue);
 
         // Use the anonymous inner class for receiving messages asynchronously
-        messageConsumer.setMessageListener(new MessageListener() {
-            @Override
-            public void onMessage(Message message) {
-                try {
-                    if (message instanceof TextMessage) {
-                        System.out.printf("TextMessage received: '%s'%n", ((TextMessage) message).getText());
-                    } else {
-                        System.out.println("Message received.");
-                    }
-                    System.out.printf("Message Content:%n%s%n", SolJmsUtility.dumpMessage(message));
-
-                    // ACK the received message manually because of the set SupportedProperty.SOL_CLIENT_ACKNOWLEDGE above
-                    message.acknowledge();
-
-                    latch.countDown(); // unblock the main thread
-                } catch (JMSException ex) {
-                    System.out.println("Error processing incoming message.");
-                    ex.printStackTrace();
+        messageConsumer.setMessageListener(message -> {
+            try {
+                if (message instanceof TextMessage) {
+                    System.out.printf("TextMessage received: '%s'%n", ((TextMessage) message).getText());
+                } else {
+                    System.out.println("Message received.");
                 }
+                System.out.printf("Message Content:%n%s%n", SolJmsUtility.dumpMessage(message));
+
+                // ACK the received message manually because of the set SupportedProperty.SOL_CLIENT_ACKNOWLEDGE above
+                message.acknowledge();
+
+                latch.countDown(); // unblock the main thread
+            } catch (JMSException ex) {
+                System.out.println("Error processing incoming message.");
+                ex.printStackTrace();
             }
         });
 
@@ -139,7 +136,7 @@ public class QueueConsumerJNDI {
         connection.stop();
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         messageConsumer.close();
         session.close();

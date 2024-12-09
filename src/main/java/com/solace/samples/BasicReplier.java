@@ -17,8 +17,8 @@
  * under the License.
  */
 
-/**
- *  Solace JMS 1.1 Examples: BasicReplier
+/*
+ * Solace JMS 1.1 Examples: BasicReplier
  */
 
 package com.solace.samples;
@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Receives a request message using Solace JMS API implementation and replies to it.
- *
+ * <p>
  * This is the Replier in the Request/Reply messaging pattern.
  */
 public class BasicReplier {
@@ -98,39 +98,36 @@ public class BasicReplier {
         final MessageProducer replyProducer = session.createProducer(null);
 
         // Use the anonymous inner class for receiving request messages asynchronously
-        requestConsumer.setMessageListener(new MessageListener() {
-            @Override
-            public void onMessage(Message request) {
-                try {
-                    Destination replyDestination = request.getJMSReplyTo();
-                    if (replyDestination != null) {
-                        System.out.println("Received request, responding...");
+        requestConsumer.setMessageListener(request -> {
+            try {
+                Destination replyDestination = request.getJMSReplyTo();
+                if (replyDestination != null) {
+                    System.out.println("Received request, responding...");
 
-                        TextMessage reply = session.createTextMessage();
-                        String text = "Sample response";
-                        reply.setText(text);
+                    TextMessage reply = session.createTextMessage();
+                    String text = "Sample response";
+                    reply.setText(text);
 
-                        // Copy the correlation ID from the request to the reply
-                        reply.setJMSCorrelationID(request.getJMSCorrelationID());
+                    // Copy the correlation ID from the request to the reply
+                    reply.setJMSCorrelationID(request.getJMSCorrelationID());
 
-                        // For direct messaging only, this flag is needed to interoperate with
-                        // Solace Java, C, and C# request reply APIs.
-                        reply.setBooleanProperty(SupportedProperty.SOLACE_JMS_PROP_IS_REPLY_MESSAGE, Boolean.TRUE);
+                    // For direct messaging only, this flag is needed to interoperate with
+                    // Solace Java, C, and C# request reply APIs.
+                    reply.setBooleanProperty(SupportedProperty.SOLACE_JMS_PROP_IS_REPLY_MESSAGE, Boolean.TRUE);
 
-                        // Sent the reply
-                        replyProducer.send(replyDestination, reply, DeliveryMode.NON_PERSISTENT,
-                                Message.DEFAULT_PRIORITY,
-                                Message.DEFAULT_TIME_TO_LIVE);
-                        System.out.println("Responded successfully. Exiting...");
+                    // Sent the reply
+                    replyProducer.send(replyDestination, reply, DeliveryMode.NON_PERSISTENT,
+                            Message.DEFAULT_PRIORITY,
+                            Message.DEFAULT_TIME_TO_LIVE);
+                    System.out.println("Responded successfully. Exiting...");
 
-                        latch.countDown(); // unblock the main thread
-                    } else {
-                        System.out.println("Received message without reply-to field.");
-                    }
-                } catch (JMSException ex) {
-                    System.out.println("Error processing incoming message.");
-                    ex.printStackTrace();
+                    latch.countDown(); // unblock the main thread
+                } else {
+                    System.out.println("Received message without reply-to field.");
                 }
+            } catch (JMSException ex) {
+                System.out.println("Error processing incoming message.");
+                ex.printStackTrace();
             }
         });
 
@@ -143,7 +140,7 @@ public class BasicReplier {
         connection.stop();
         // Close everything in the order reversed from the opening order
         // NOTE: as the interfaces below extend AutoCloseable,
-        // with them it's possible to use the "try-with-resources" Java statement
+        // with them, it's possible to use the "try-with-resources" Java statement
         // see details at https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         replyProducer.close();
         requestConsumer.close();
